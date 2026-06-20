@@ -1,0 +1,90 @@
+# =============================================
+# Flutter/Dart
+# =============================================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.g.dart
+*.freezed.dart
+
+# Build artifacts
+build/
+**/build/
+
+# Android generated/SDK artifacts
+**/android/.gradle/
+**/android/local.properties
+**/android/captures/
+**/android/key.properties
+**/android/*.jks
+**/android/*.keystore
+
+# iOS
+**/ios/.symlinks/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/.last_build_id
+**/ios/Pods/
+
+# Windows / macOS / Linux desktop
+**/windows/flutter/ephemeral/
+**/linux/flutter/ephemeral/
+**/macos/Flutter/ephemeral/
+
+# Environment & Secrets
+.env
+**/.env
+**/lib/config/env.g.dart
+**/.envied.dart
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# pub cache
+.pub-cache/
+.pub/
+
+# =============================================
+# Folders not needed in the repo
+# =============================================
+# Android SDK decompiled sources & resources
+resources/
+sources/
+android/
+
+# Build outputs / releases
+APK/
+release/
+icones/
+Imagens/
+avatar/
+
+# Reports / scratch notes
+relatorios/
+
+# =============================================
+# Python / Backend
+# =============================================
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/**/*.pyc
+backend/.venv/
+backend/venv/
+backend/*.egg-info/
+
+# Docker volumes / postgres data
+backend/postgres_data/
+
+# =============================================
+# SQLite databases (generated at runtime)
+# =============================================
+**/assets/*.db
+
+# Logs
+*.log

@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - tts_volume:/app/tts_cache_files
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/learnlanguages
+      - GROQ_API_KEY=YOUR_GROQ_KEY_HERE
+      - OPENAI_API_KEY=YOUR_OPENAI_KEY_HERE
+      - MOCK_GOOGLE_PLAY=True
+      - GOOGLE_SERVICE_ACCOUNT_JSON=
+      - TTS_CACHE_DIR=/app/tts_cache_files
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:15-alpine
+    container_name: learnlanguages_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=learnlanguages
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:
+  tts_volume:
