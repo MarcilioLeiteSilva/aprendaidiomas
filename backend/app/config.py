@@ -15,13 +15,57 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Normaliza a URL do banco de dados para PostgreSQL assíncrono caso necessário.
-# Em produção (ex: Easypanel/VPS), a DATABASE_URL injetada costuma ser "postgres://" ou "postgresql://",
-# mas a biblioteca sqlalchemy (create_async_engine) requer o prefixo "postgresql+asyncpg://".
-if settings.DATABASE_URL.startswith("postgres://"):
-    settings.DATABASE_URL = settings.DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
-elif settings.DATABASE_URL.startswith("postgresql://"):
-    settings.DATABASE_URL = settings.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+def normalize_db_url(url: str) -> str:
+    if not (url.startswith("postgres://") or url.startswith("postgresql://")):
+        return url
+    try:
+        # Se a senha contiver caracteres especiais como '@' ou '#', o parsing padrão do python/sqlalchemy falha.
+        # Por isso fazemos um parse customizado dividindo pelo último '@' que separa as credenciais do host.
+        if url.startswith("postgres://"):
+            remaining = url[len("postgres://"):]
+        else:
+            remaining = url[len("postgresql://"):]
+            
+        if "@" in remaining:
+            user_pass, host_port_db = remaining.rsplit("@", 1)
+            
+            # Divide host/porta e banco de dados
+            if "/" in host_port_db:
+                host_port, db = host_port_db.split("/", 1)
+                path = "/" + db
+            else:
+                host_port = host_port_db
+                path = ""
+                
+            # Codifica (percent-encode) usuário e senha para evitar erros de sintaxe na URL
+            import urllib.parse
+            if ":" in user_pass:
+                user, password = user_pass.split(":", 1)
+                user = urllib.parse.quote_plus(user)
+                password = urllib.parse.quote_plus(password)
+                user_pass_encoded = f"{user}:{password}@"
+            else:
+                user_pass_encoded = f"{urllib.parse.quote_plus(user_pass)}@"
+        else:
+            user_pass_encoded = ""
+            if "/" in remaining:
+                host_port, db = remaining.split("/", 1)
+                path = "/" + db
+            else:
+                host_port = remaining
+                path = ""
+                
+        return f"postgresql+asyncpg://{user_pass_encoded}{host_port}{path}"
+    except Exception as e:
+        # Fallback simples
+        if url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif url.startswith("postgresql://"):
+            return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return url
+
+# Normaliza a URL do banco de dados para PostgreSQL assíncrono e corrige caracteres especiais na senha
+settings.DATABASE_URL = normalize_db_url(settings.DATABASE_URL)
 
 # Imprime a URL de conexão com a senha mascarada para depuração fácil nos logs do Easypanel
 try:
