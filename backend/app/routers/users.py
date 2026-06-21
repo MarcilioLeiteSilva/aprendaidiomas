@@ -6,6 +6,7 @@ from sqlalchemy import select
 from app.database import get_db
 from app.models import User, DailyUsage
 from app.schemas import UserProfileResponse
+from app.config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -28,7 +29,7 @@ async def get_or_create_user(
         user = User(
             device_id=device_id,
             app_language=app_language,
-            is_premium=False
+            is_premium=settings.MOCK_GOOGLE_PLAY
         )
         db.add(user)
         # Flush para obter o ID gerado pelo Postgres antes de commitar
@@ -39,6 +40,11 @@ async def get_or_create_user(
         if user.app_language != app_language:
             user.app_language = app_language
             db.add(user)
+
+    # Se MOCK_GOOGLE_PLAY estiver ativado, garante status Premium para testes
+    if settings.MOCK_GOOGLE_PLAY and not user.is_premium:
+        user.is_premium = True
+        db.add(user)
 
     # Verifica expiração de assinatura Pro
     if user.is_premium and user.premium_until:
