@@ -11,9 +11,7 @@ class AppConfig {
   static const LanguageTarget activeLanguage = LanguageTarget.spanish;
   
   // URL do Servidor FastAPI
-  static const String backendUrl = kReleaseMode 
-      ? "https://seu-subdominio-easypanel.com" 
-      : "http://10.0.2.2:8000";
+  static const String backendUrl = "https://appidiomas-backend-idiomas.gtalg3.easypanel.host";
 
 
   // 1. CONFIGURAÇÕES VISUAIS (TEMA)
