@@ -10,7 +10,7 @@ class AppConfig {
   static const LanguageTarget activeLanguage = LanguageTarget.english;
 
   // URL do backend FastAPI (use 10.0.2.2 para emulador Android, IP real para dispositivo)
-  static const String backendUrl = 'http://10.0.2.2:8000';
+  static const String backendUrl = 'https://appidiomas-backend-idiomas.gtalg3.easypanel.host';
 
   // 1. CONFIGURAÇÕES VISUAIS (TEMA)
   static Color get primaryColor {
