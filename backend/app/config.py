@@ -15,5 +15,13 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+# Normaliza a URL do banco de dados para PostgreSQL assíncrono caso necessário.
+# Em produção (ex: Easypanel/VPS), a DATABASE_URL injetada costuma ser "postgres://" ou "postgresql://",
+# mas a biblioteca sqlalchemy (create_async_engine) requer o prefixo "postgresql+asyncpg://".
+if settings.DATABASE_URL.startswith("postgres://"):
+    settings.DATABASE_URL = settings.DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+elif settings.DATABASE_URL.startswith("postgresql://"):
+    settings.DATABASE_URL = settings.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 # Garante que a pasta de cache do TTS exista
 os.makedirs(settings.TTS_CACHE_DIR, exist_ok=True)
